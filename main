@@ -1,0 +1,82 @@
+import sympy
+from math import fabs
+x, y = sympy.symbols('x, y')
+
+
+def price_elasticity_of_demand():
+    func = input('Введите функцию: ')
+    func.lower()
+    dependence = input('Укажите тип зависимости (линейная/степенная) : ')
+    if dependence.lower() == 'линейная':
+        b = float(func[func.find('-') + 2:func.find('P')])
+        el_type = input('Введите тип коэфицента (точечная/дуговая): ')
+        if el_type.lower() == 'точечная':
+            p = float(input('Введите цену товара: '))
+            q = float(input('Введите величину спроса: '))
+            el_coefficient = -1 * b * p / q
+            return el_coefficient
+        elif el_type.lower() == 'дуговая':
+            p, p1 = map(float, input('Введите первоначальную и конечную цены товара: ').split())
+            q, q1 = map(float, input('Введите первоначальную и конечную величину спроса на товар: ').split())
+            el_coefficient = ((q1 - q) * (p1 + p)) / ((p1 - p) * (q1 + q))
+            return el_coefficient
+        else:
+            print('Некорректный ввод, повторите попытку.')
+            exit()
+    elif dependence.lower() == 'степенная':
+        n = func[func.find('**') + 3:]
+        el_coefficient = float(n)
+        return round(el_coefficient, 2)
+    else:
+        print('Некорректный ввод, повторите попытку.')
+        exit()
+
+
+def price_elasticity_of_supply():
+    coefficient1 = float(input('Введите коэфицент при цене P(x): '))
+    free_member = float(input('Введите значение свободного члена: '))
+    if free_member == 0:
+        return -1
+    else:
+        el_type = input('Введите тип коэфицента (точечная/дуговая): ')
+        if el_type.lower() == 'точечная':
+            p = float(input('Введите цену товара: '))
+            q = float(input('Введите величину предложения: '))
+            el_coefficient = coefficient1 * p / q
+            return el_coefficient
+        elif el_type.lower() == 'дуговая':
+            p, p1 = map(float, input('Введите первоначальную и конечную цены товара: ').split())
+            q, q1 = map(float, input('Введите первоначальную и конечную величину спроса на товар: ').split())
+            delta = p1 - p
+            el_coefficient = sympy.limit(((free_member - coefficient1 * (p + delta)) - (free_member - coefficient1 * p)) / delta, delta, 0)
+            return round(el_coefficient, 2)
+        else:
+            print('Некорректный ввод, повторите попытку.')
+            exit()
+
+
+def cross_sed():
+    coefficient1 = float(input('Введите коэфицент при цене P(x): '))
+    coefficient2 = float(input('Введите коэфицент при цене P(y): '))
+    free_member = float(input('Введите значение свободного члена: '))
+    good = input('Укажите благо для рассчёта коэфицента эластичности (X/Y): ')
+    p, q = map(float, input('Введите цену на рассчитываемое благо и величину спроса на товар-комплемент: '))
+    el_coefficient = sympy.diff(coefficient1 * x + coefficient2 * y + free_member, good) * p / q
+    return round(el_coefficient, 2)
+
+
+def price_elasticity_of_revenue():
+    return round((1 - fabs(price_elasticity_of_demand())), 2)
+
+
+choice = int(input('Выберите одну из предложенных функций: расчёт эластичности: 1 - спроса по цене,  2 - предложения по цене, 3 - спроса по цене(перекрёстная), 4 - выручки по цене: '))
+if choice == 1:
+    print('Эластичность равна: ', price_elasticity_of_demand())
+elif choice == 2:
+    print('Эластичность равна: ', price_elasticity_of_supply())
+elif choice == 3:
+    print('Эластичность равна: ', cross_sed())
+elif choice == 4:
+    print('Эластичность равна: ', price_elasticity_of_revenue())
+
+
